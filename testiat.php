@@ -22,7 +22,7 @@ class Api
 
         echo self::INTRO;
         echo '
-        '.self::DESCRIPTION .'
+        '.self::DESCRIPTION.'
         '.self::VERSION.'
         ';
 
