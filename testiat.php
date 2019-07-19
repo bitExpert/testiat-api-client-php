@@ -46,7 +46,7 @@ class Api
         $postFields = http_build_query(
             array_merge(
                 [
-                    "API" => $this->apikey
+                    'API' => $this->apikey
                 ],
                 $queryArray
             )
