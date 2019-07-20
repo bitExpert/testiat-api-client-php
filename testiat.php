@@ -1,6 +1,6 @@
 <?php
 
-namespace Testiat;
+namespace bitExpert\Testiat;
 
 class Api
 {
