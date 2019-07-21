@@ -10,6 +10,10 @@
         }
     ],
     "require": {
-        "ext-curl": "*"
+        "psr/http-client": "^1.0",
+        "nyholm/psr7": "^1.1"
+    },
+    "require-dev": {
+        "kriswallsmith/buzz": "^1.0"
     }
 }

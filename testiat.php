@@ -1,9 +1,24 @@
 <?php
+declare(strict_types=1);
 
 namespace bitExpert\Testiat;
 
+use Psr\Http\Client\ClientInterface;
+
+require 'vendor/autoload.php';
+
 class Api
 {
+    /**
+     * @var ClientInterface
+     */
+    protected $client;
+
+    /**
+     * @var string
+     */
+    private $apikey;
+
     private const API_ENPOINT = 'https://testi.at/UAPI';
     private const VERSION = '1.0.0';
     private const DESCRIPTION = 'testi@ API client for PHP';
@@ -18,7 +33,10 @@ class Api
 
     private const API_KEY = '';
 
-    public function __construct() {
+    public function __construct(
+        ClientInterface $client
+    ) {
+        $this->client = $client;
 
         echo self::INTRO;
         echo '
@@ -51,27 +69,29 @@ class Api
                 $queryArray
             )
         );
-        $ch = curl_init();
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
-		curl_setopt($ch, CURLOPT_URL, self::API_ENPOINT . $path);
-		curl_setopt($ch, CURLOPT_POST, 1);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $postFields);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); 
-		$response = curl_exec($ch);
-		
-		curl_close($ch);
-		
-		if(!$response){
-			return false;
-		}
-		return json_decode($response);
+
+        $psr17Factory = new \Nyholm\Psr7\Factory\Psr17Factory();
+        $body = $psr17Factory->createStream($postFields);
+
+        $request = ($psr17Factory->createRequest(
+            'POST',
+            self::API_ENPOINT . $path
+        ))->withBody($body);
+
+        $response = $this->client->sendRequest($request);
+
+        if(!$response){
+            return false;
+        }
+
+        return json_decode((string) $response->getBody(), true);
     }
 
-    public function getAvailableClients() {
+    public function getAvailableClients(): array {
         return self::createRequest([], '/listEmlClients');
     }
 
-    public function getProjectStatus($id) {
+    public function getProjectStatus($id): array {
         if (
             !$id ||
             gettype($id) !== 'string'
@@ -85,7 +105,7 @@ class Api
         ], '/projStatus');
     }
 
-    public function startEmailTest($subject, $html, $clients) {
+    public function startEmailTest($subject, $html, $clients): array {
         if (
             !$subject ||
             !$html ||
