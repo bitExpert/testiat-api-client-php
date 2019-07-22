@@ -9,4 +9,7 @@ $client = new \Buzz\Client\Curl($factory);
 
 $api = new Api($client, $factory, "someapikey");
 
-var_dump($api->getAvailableClients());
+$response = $api->getAvailableClients();
+$response = $response->getBody();
+$parsedResponse = json_decode($response);
+var_dump($parsedResponse);
