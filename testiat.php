@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace bitExpert\Testiat;
 
 use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestFactoryInterface;
 
 require 'vendor/autoload.php';
 
@@ -15,52 +16,30 @@ class Api
     protected $client;
 
     /**
+     * @var RequestFactoryInterface
+     */
+    protected $factory;
+
+    /**
      * @var string
      */
     private $apikey;
 
     private const API_ENPOINT = 'https://testi.at/UAPI';
-    private const VERSION = '1.0.0';
-    private const DESCRIPTION = 'testi@ API client for PHP';
-    private const INTRO = '
-     ████████╗███████╗███████╗████████╗██╗    █████╗ ████████╗
-     ╚══██╔══╝██╔════╝██╔════╝╚══██╔══╝██║   ██╔══██╗╚══██╔══╝
-        ██║   █████╗  ███████╗   ██║   ██║   ███████║   ██║ 
-        ██║   ██╔══╝  ╚════██║   ██║   ██║   ██╔══██║   ██║   
-        ██║   ███████╗███████║   ██║   ██║██╗██║  ██║   ██║   
-        ╚═╝   ╚══════╝╚══════╝   ╚═╝   ╚═╝╚═╝╚═╝  ╚═╝   ╚═╝ 
-    ';
 
     private const API_KEY = '';
 
     public function __construct(
-        ClientInterface $client
+        ClientInterface $client,
+        RequestFactoryInterface $factory,
+        string $apikey
     ) {
         $this->client = $client;
-
-        echo self::INTRO;
-        echo '
-        '.self::DESCRIPTION.'
-        '.self::VERSION.'
-        ';
-
-        if (
-            count(getopt('', ['apikey::'])) === 0 &&
-            !getenv('TESTIAT_APIKEY', true)
-        ) {
-            echo 'Please provide an API key.';
-            exit(1);
-        }
-
-        $this->apikey = getenv('TESTIAT_APIKEY', true)
-            ? getenv('TESTIAT_APIKEY', true)
-            : isset(getopt('', ['apikey::'])['apikey'])
-                ? getopt('', ['apikey::'])['apikey']
-                : self::API_KEY;
-
+        $this->factory = $factory;
+        $this->apikey = $apikey;
     }
 
-    private function createRequest($queryArray, $path) {
+    private function createRequest(array $queryArray, string $path) {
         $postFields = http_build_query(
             array_merge(
                 [
@@ -70,13 +49,12 @@ class Api
             )
         );
 
-        $psr17Factory = new \Nyholm\Psr7\Factory\Psr17Factory();
-        $body = $psr17Factory->createStream($postFields);
-
-        $request = ($psr17Factory->createRequest(
+        $request = ($this->factory->createRequest(
             'POST',
             self::API_ENPOINT . $path
-        ))->withBody($body);
+        ));
+
+        $request->getBody()->write($postFields);
 
         $response = $this->client->sendRequest($request);
 
@@ -91,13 +69,12 @@ class Api
         return self::createRequest([], '/listEmlClients');
     }
 
-    public function getProjectStatus($id): array {
+    public function getProjectStatus(string $id): array {
         if (
             !$id ||
             gettype($id) !== 'string'
         ) {
-            echo 'Please provide a valid project ID.';
-            exit(1);
+            return 'Please provide a valid project ID.';
         }
 
         return self::createRequest([
@@ -105,22 +82,20 @@ class Api
         ], '/projStatus');
     }
 
-    public function startEmailTest($subject, $html, $clients): array {
+    public function startEmailTest(string $subject, string $html, array $clients): array {
         if (
             !$subject ||
             !$html ||
             !$clients
         ) {
-            echo 'Please provide subject, html and client list.';
-            exit(1);
+            return 'Please provide subject, html and client list.';
         }
 
         if (
             !is_array($clients) ||
             count($clients) === 0
         ) {
-            echo 'Please provide at least one client as array.';
-            exit(1);
+            return 'Please provide at least one client as array.';
         }
 
         return self::createRequest([
