@@ -27,8 +27,6 @@ class Api
 
     private const API_ENPOINT = 'https://testi.at/UAPI';
 
-    private const API_KEY = '';
-
     public function __construct(
         ClientInterface $client,
         RequestFactoryInterface $factory,
@@ -62,42 +60,20 @@ class Api
             return false;
         }
 
-        return json_decode((string) $response->getBody(), true);
+        return $response;
     }
 
-    public function getAvailableClients(): array {
+    public function getAvailableClients(): object {
         return self::createRequest([], '/listEmlClients');
     }
 
-    public function getProjectStatus(string $id): array {
-        if (
-            !$id ||
-            gettype($id) !== 'string'
-        ) {
-            return 'Please provide a valid project ID.';
-        }
-
+    public function getProjectStatus(string $id): object {
         return self::createRequest([
             'ProjID' => $id
         ], '/projStatus');
     }
 
-    public function startEmailTest(string $subject, string $html, array $clients): array {
-        if (
-            !$subject ||
-            !$html ||
-            !$clients
-        ) {
-            return 'Please provide subject, html and client list.';
-        }
-
-        if (
-            !is_array($clients) ||
-            count($clients) === 0
-        ) {
-            return 'Please provide at least one client as array.';
-        }
-
+    public function startEmailTest(string $subject, string $html, array $clients): object {
         return self::createRequest([
             'Subject' => $subject,
             'HTML' => $html,
