@@ -37,7 +37,8 @@ class Api
         $this->apikey = $apikey;
     }
 
-    private function createRequest(array $queryArray, string $path) {
+    private function createRequest(array $queryArray, string $path)
+    {
         $postFields = http_build_query(
             array_merge(
                 [
@@ -47,38 +48,43 @@ class Api
             )
         );
 
-        $request = ($this->factory->createRequest(
+        $request = $this->factory->createRequest(
             'POST',
             self::API_ENPOINT . $path
-        ));
+        );
 
         $request->getBody()->write($postFields);
 
         $response = $this->client->sendRequest($request);
 
-        if(!$response){
+        if (!$response) {
             return false;
         }
 
         return $response;
     }
 
-    public function getAvailableClients(): object {
+    public function getAvailableClients(): object
+    {
         return self::createRequest([], '/listEmlClients');
     }
 
-    public function getProjectStatus(string $id): object {
+    public function getProjectStatus(string $id): object
+    {
         return self::createRequest([
             'ProjID' => $id
-        ], '/projStatus');
+        ], '/projStatus'
+        );
     }
 
-    public function startEmailTest(string $subject, string $html, array $clients): object {
+    public function startEmailTest(string $subject, string $html, array $clients): object
+    {
         return self::createRequest([
             'Subject' => $subject,
             'HTML' => $html,
             'ECID' => $clients
-        ], '/letsgo');
+        ], '/letsgo'
+        );
     }
 }
 
