@@ -10,28 +10,29 @@ require 'vendor/autoload.php';
 
 class Api
 {
+    private const API_ENPOINT = 'https://testi.at/UAPI';
     /**
      * @var ClientInterface
      */
     protected $client;
-
     /**
      * @var RequestFactoryInterface
      */
     protected $factory;
-
     /**
      * @var string
      */
     private $apikey;
 
-    private const API_ENPOINT = 'https://testi.at/UAPI';
-
-    public function __construct(
-        ClientInterface $client,
-        RequestFactoryInterface $factory,
-        string $apikey
-    ) {
+    /**
+     * Api constructor.
+     *
+     * @param ClientInterface $client
+     * @param RequestFactoryInterface $factory
+     * @param string $apikey
+     */
+    public function __construct(ClientInterface $client, RequestFactoryInterface $factory, string $apikey)
+    {
         $this->client = $client;
         $this->factory = $factory;
         $this->apikey = $apikey;
