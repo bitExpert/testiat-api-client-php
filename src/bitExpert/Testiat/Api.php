@@ -3,8 +3,10 @@ declare(strict_types=1);
 
 namespace bitExpert\Testiat;
 
+use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
+use Psr\Http\Message\ResponseInterface;
 
 require 'vendor/autoload.php';
 
@@ -38,54 +40,48 @@ class Api
         $this->apikey = $apikey;
     }
 
-    private function createRequest(array $queryArray, string $path)
-    {
-        $postFields = http_build_query(
-            array_merge(
-                [
-                    'API' => $this->apikey
-                ],
-                $queryArray
-            )
-        );
-
-        $request = $this->factory->createRequest(
-            'POST',
-            self::API_ENPOINT . $path
-        );
-
-        $request->getBody()->write($postFields);
-
-        $response = $this->client->sendRequest($request);
-
-        if (!$response) {
-            return false;
-        }
-
-        return $response;
-    }
-
-    public function getAvailableClients(): object
+    public function getAvailableClients(): ?ResponseInterface
     {
         return $this->createRequest([], '/listEmlClients');
     }
 
-    public function getProjectStatus(string $id): object
+    public function getProjectStatus(string $id): ?ResponseInterface
     {
-        return $this->createRequest([
-            'ProjID' => $id
-        ], '/projStatus'
+        return $this->createRequest(
+            [
+                'ProjID' => $id
+            ],
+            '/projStatus'
         );
     }
 
-    public function startEmailTest(string $subject, string $html, array $clients): object
+    public function startEmailTest(string $subject, string $html, array $clients): ?ResponseInterface
     {
-        return $this->createRequest([
-            'Subject' => $subject,
-            'HTML' => $html,
-            'ECID' => $clients
-        ], '/letsgo'
+        return $this->createRequest(
+            [
+                'Subject' => $subject,
+                'HTML' => $html,
+                'ECID' => $clients
+            ],
+            '/letsgo'
         );
+    }
+
+    private function createRequest(array $queryArray, string $path): ?ResponseInterface
+    {
+        try {
+            $request = $this->factory->createRequest(
+                'POST',
+                self::API_ENPOINT . $path
+            );
+            $queryArray = array_merge(['API' => $this->apikey], $queryArray);
+            $postFields = http_build_query($queryArray);
+            $request->getBody()->write($postFields);
+
+            return $this->client->sendRequest($request);
+        } catch (ClientExceptionInterface $e) {
+        }
+
+        return null;
     }
 }
-
