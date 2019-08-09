@@ -67,12 +67,12 @@ class Api
 
     public function getAvailableClients(): object
     {
-        return self::createRequest([], '/listEmlClients');
+        return $this->createRequest([], '/listEmlClients');
     }
 
     public function getProjectStatus(string $id): object
     {
-        return self::createRequest([
+        return $this->createRequest([
             'ProjID' => $id
         ], '/projStatus'
         );
@@ -80,7 +80,7 @@ class Api
 
     public function startEmailTest(string $subject, string $html, array $clients): object
     {
-        return self::createRequest([
+        return $this->createRequest([
             'Subject' => $subject,
             'HTML' => $html,
             'ECID' => $clients
