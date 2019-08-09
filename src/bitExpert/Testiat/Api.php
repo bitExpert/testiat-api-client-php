@@ -40,14 +40,21 @@ class Api
         $this->apikey = $apikey;
     }
 
+    /**
+     * @return ResponseInterface|null
+     */
     public function getAvailableClients(): ?ResponseInterface
     {
-        return $this->createRequest([], '/listEmlClients');
+        return $this->apiRequest([], '/listEmlClients');
     }
 
+    /**
+     * @param string $id
+     * @return ResponseInterface|null
+     */
     public function getProjectStatus(string $id): ?ResponseInterface
     {
-        return $this->createRequest(
+        return $this->apiRequest(
             [
                 'ProjID' => $id
             ],
@@ -55,9 +62,15 @@ class Api
         );
     }
 
+    /**
+     * @param string $subject
+     * @param string $html
+     * @param array $clients
+     * @return ResponseInterface|null
+     */
     public function startEmailTest(string $subject, string $html, array $clients): ?ResponseInterface
     {
-        return $this->createRequest(
+        return $this->apiRequest(
             [
                 'Subject' => $subject,
                 'HTML' => $html,
@@ -67,7 +80,12 @@ class Api
         );
     }
 
-    private function createRequest(array $queryArray, string $path): ?ResponseInterface
+    /**
+     * @param array $queryArray
+     * @param string $path
+     * @return ResponseInterface|null
+     */
+    private function apiRequest(array $queryArray, string $path): ?ResponseInterface
     {
         try {
             $request = $this->factory->createRequest(
