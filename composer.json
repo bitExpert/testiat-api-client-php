@@ -7,13 +7,33 @@
         {
             "name": "Daniel Ruf",
             "email": "d.ruf@bitexpert.de"
+        },
+        {
+            "name": "Stephan Hochdörfer",
+            "email": "S.Hochdoerfer@bitexpert.de"
         }
     ],
+    "autoload": {
+        "psr-4": {
+            "bitExpert\\Testiat\\": "src/bitExpert/Testiat"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "bitExpert\\Testiat\\": "tests/bitExpert/Testiat"
+        }
+    },
     "require": {
+        "php": "^7.2.0",
         "psr/http-client": "^1.0"
     },
     "require-dev": {
         "kriswallsmith/buzz": "^1.0",
-        "nyholm/psr7": "^1.1"
+        "nyholm/psr7": "^1.1",
+        "phpunit/phpunit": "^8.0",
+        "squizlabs/php_codesniffer": "^3.4",
+        "monolog/monolog": "^1.22.1",
+        "phing/phing": "^2.16.0",
+        "bitexpert/phing-securitychecker": "^0.3.0"
     }
 }
