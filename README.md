@@ -5,24 +5,21 @@ This is the PHP API client for [Testi@](https://testi.at).
 
 ## Installation
 
-Download `testiat.php` and place it in your project.
+`composer require bitexpert/testiat-api-client-php`
 
 ## Usage
 
 `emails.php`
 ```php
-require __DIR__ . '/testiat.php';
+use \bitExpert\Testiat\Api;
 
-use \Testiat\Api;
+require 'vendor/autoload.php';
 
-$api = new Api();
+$factory = new \Nyholm\Psr7\Factory\Psr17Factory();
+$client = new \Buzz\Client\Curl($factory);
+
+$api = new Api($psr7Client, $psr17Factory, 'someapikey');
 ```
-
-```shell
-php emails.php --apikey=<your-api-key>
-```
-
-Alternatively set the `TESTIAT_APIKEY` environment variable.
 
 You can also use [vlucas/phpdotenv](https://packagist.org/packages/vlucas/phpdotenv) or [symfony/dotenv](https://packagist.org/packages/symfony/dotenv).
 
@@ -30,18 +27,26 @@ You can also use [vlucas/phpdotenv](https://packagist.org/packages/vlucas/phpdot
 ## Examples
 
 ```php
-require __DIR__ . '/testiat.php';
+$factory = new \Nyholm\Psr7\Factory\Psr17Factory();
+$client = new \Buzz\Client\Curl($factory);
 
-use \Testiat\Api;
+$api = new Api($client, $factory, 'someapikey');
 
-$api = new Api();
-var_dump($api->getAvailableClients());
-var_dump($api->getProjectStatus('GlZfbnMcnRphPcRSyQwFVXbcn3'));
-var_dump($api->startEmailTest(
+$availableClients = $api->getAvailableClients();
+$availableClients = $availableClients->getBody();
+var_dump(json_decode($availableClients));
+
+$projectStatus = $api->getProjectStatus('GlZfbnMcnRphPcRSyQwFVXbcn3');
+$projectStatus = $projectStatus->getBody();
+var_dump(json_decode($projectStatus));
+
+$emailTest = $api->startEmailTest(
     'test123',
     '<p>Sample HTML code</p>',
     [1483107480, 1479404638]
-));
+);
+$emailTest = $emailTest->getBody();
+var_dump(json_decode($emailTest));
 ```
 
 
