@@ -1,6 +1,7 @@
 {
     "name": "bitexpert/testiat-api-client-php",
     "description": "PHP API client for Testiat",
+    "version": "1.0.0",
     "type": "library",
     "license": "Apache-2.0",
     "authors": [
