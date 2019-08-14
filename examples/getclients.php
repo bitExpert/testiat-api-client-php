@@ -2,7 +2,7 @@
 
 use \bitExpert\Testiat\Api;
 
-require '../vendor/autoload.php';
+require 'vendor/autoload.php';
 
 $factory = new \Nyholm\Psr7\Factory\Psr17Factory();
 $client = new \Buzz\Client\Curl($factory);
