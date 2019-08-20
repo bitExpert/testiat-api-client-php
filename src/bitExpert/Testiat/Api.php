@@ -13,6 +13,9 @@ require 'vendor/autoload.php';
 class Api
 {
     private const API_ENPOINT = 'https://testi.at/UAPI';
+    private const API_ENDPOINT_CLIENTS_LIST = '/listEmlClients';
+    private const API_ENDPOINT_PROJECT_STATUS = '/projStatus';
+    private const API_ENDPOINT_EMAILTEST_START = '/letsgo';
     /**
      * @var ClientInterface
      */
@@ -45,7 +48,7 @@ class Api
      */
     public function getAvailableClients(): ?ResponseInterface
     {
-        return $this->apiRequest([], '/listEmlClients');
+        return $this->apiRequest([], self::API_ENDPOINT_CLIENTS_LIST);
     }
 
     /**
@@ -58,7 +61,7 @@ class Api
             [
                 'ProjID' => $id
             ],
-            '/projStatus'
+            self::API_ENDPOINT_PROJECT_STATUS
         );
     }
 
@@ -76,7 +79,7 @@ class Api
                 'HTML' => $html,
                 'ECID' => $clients
             ],
-            '/letsgo'
+            self::API_ENDPOINT_EMAILTEST_START
         );
     }
 
